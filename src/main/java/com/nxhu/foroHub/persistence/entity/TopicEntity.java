@@ -19,9 +19,9 @@ public class TopicEntity
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String title;
-    @Column(nullable = false)
+    @Column(nullable = false, unique = true)
     private String message;
     @Column(nullable = false)
     private LocalDateTime creation_date;
