@@ -43,11 +43,6 @@ public class CourseController
     @GetMapping("/course/{id}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long courseId)
     {
-        boolean notFound = courseService.getCourseById(courseId).isEmpty();
-        if (notFound) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
         return courseService.getCourseById(courseId)
                 .map(c -> new CourseDTO(c.getName(), c.getCategory()))
                 .map(courseDTO -> new ResponseEntity<>(courseDTO, HttpStatus.OK))

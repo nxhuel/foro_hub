@@ -43,11 +43,6 @@ public class TopicController
     @GetMapping("/topic/{id}")
     public ResponseEntity<TopicDTO> getTopic(@PathVariable Long topicId)
     {
-        boolean notFound = topicService.getTopicById(topicId).isEmpty();
-        if (notFound) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-
         return topicService.getTopicById(topicId)
                 .map(t -> new TopicDTO(t.getTitle(), t.getMessage(), t.getCreation_date(), t.getStatus(), t.getAuthor(), t.getCourse()))
                 .map(topicDTO -> new ResponseEntity<>(topicDTO, HttpStatus.OK))
