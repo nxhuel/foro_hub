@@ -1,5 +1,6 @@
 package com.nxhu.foroHub.controller;
 
+import com.nxhu.foroHub.dto.TopicAnswerDTO;
 import com.nxhu.foroHub.dto.TopicDTO;
 import com.nxhu.foroHub.persistence.entity.TopicEntity;
 import com.nxhu.foroHub.service.TopicService;
@@ -29,31 +30,44 @@ public class TopicController
     public ResponseEntity<Set<TopicDTO>> getTopics()
     {
         boolean notFound = topicService.getTopics().isEmpty();
-        if (notFound) {
+        if (notFound)
+        {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
         Set<TopicDTO> topics = topicService.getTopics().stream()
-                .map(t -> new TopicDTO(t.getTitle(), t.getMessage(), t.getCreation_date(), t.getStatus(), t.getAuthor(), t.getCourse()))
+                .map(t -> new TopicDTO(t.getTitle(), t.getMessage(), t.getCreation_date(), t.getStatus(), t.getAuthor().getUsername(), t.getCourse().getCategory()))
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(topics, HttpStatus.OK);
     }
 
-    @GetMapping("/topic/{id}")
+    @GetMapping("/topic/{topicId}")
     public ResponseEntity<TopicDTO> getTopic(@PathVariable Long topicId)
     {
         return topicService.getTopicById(topicId)
-                .map(t -> new TopicDTO(t.getTitle(), t.getMessage(), t.getCreation_date(), t.getStatus(), t.getAuthor(), t.getCourse()))
+                .map(t -> new TopicDTO(t.getTitle(), t.getMessage(), t.getCreation_date(), t.getStatus(), t.getAuthor().getUsername(), t.getCourse().getCategory()))
                 .map(topicDTO -> new ResponseEntity<>(topicDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+    
+    @GetMapping("/topic-answer/{topicId}")
+    public ResponseEntity<TopicAnswerDTO> getTopicAnswer(@PathVariable Long topicId)
+    {
+        return topicService.getTopicById(topicId)
+                .map(t -> new TopicAnswerDTO(
+                        t.getTitle(),
+                        t.getList_answer().stream().map(a -> a.getMessage()).collect(Collectors.toSet())))
+                .map(topicAnswerDTO -> new ResponseEntity<>(topicAnswerDTO, HttpStatus.OK))
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
-    @PutMapping("/update-topic/{id}")
+    @PutMapping("/update-topic/{topicId}")
     public ResponseEntity<Void> updateTopic(@PathVariable Long topicId, @RequestBody TopicEntity newTopic)
     {
         boolean notFound = topicService.getTopicById(topicId).isEmpty();
-        if (notFound) {
+        if (notFound)
+        {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 
@@ -61,11 +75,12 @@ public class TopicController
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/delete-topic/{id}")
+    @DeleteMapping("/delete-topic/{topicId}")
     public ResponseEntity<Void> deleteTopic(@PathVariable Long topicId)
     {
         boolean notFound = topicService.getTopicById(topicId).isEmpty();
-        if (notFound) {
+        if (notFound)
+        {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
 

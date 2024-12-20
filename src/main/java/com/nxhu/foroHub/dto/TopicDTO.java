@@ -1,9 +1,6 @@
 package com.nxhu.foroHub.dto;
 
-import com.nxhu.foroHub.persistence.entity.CourseEntity;
 import com.nxhu.foroHub.persistence.entity.Status;
-import com.nxhu.foroHub.persistence.entity.UserEntity;
-
 import java.time.LocalDateTime;
 
 public record TopicDTO(
@@ -11,8 +8,8 @@ public record TopicDTO(
         String message,
         LocalDateTime creation_date,
         Status status,
-        UserEntity author,
-        CourseEntity course
+        String author,
+        String course
 )
 {
 }

@@ -35,22 +35,22 @@ public class AnswerController
         }
 
         Set<AnswerDTO> answers = answerService.getAnswers().stream()
-                .map(a -> new AnswerDTO(a.getMessage(), a.getTopic(), a.getCreation_date(), a.getAuthor(), a.getSolution()))
+                .map(a -> new AnswerDTO(a.getMessage(), a.getTopic().getTitle(), a.getCreation_date(), a.getAuthor().getUsername(), a.getSolution()))
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(answers, HttpStatus.OK);
     }
 
-    @GetMapping("/answer/{id}")
+    @GetMapping("/answer/{answerId}")
     public ResponseEntity<AnswerDTO> getAnswer(@PathVariable Long answerId)
     {
         return answerService.getAnswerById(answerId)
-                .map(a -> new AnswerDTO(a.getMessage(), a.getTopic(), a.getCreation_date(), a.getAuthor(), a.getSolution()))
+                .map(a -> new AnswerDTO(a.getMessage(), a.getTopic().getTitle(), a.getCreation_date(), a.getAuthor().getUsername(), a.getSolution()))
                 .map(answerDTO -> new ResponseEntity<>(answerDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/delete-answer/{id}")
+    @DeleteMapping("/delete-answer/{answerId}")
     public ResponseEntity<Void> deleteAnswer(@PathVariable Long answerId)
     {
         boolean notFound = answerService.getAnswerById(answerId).isEmpty();

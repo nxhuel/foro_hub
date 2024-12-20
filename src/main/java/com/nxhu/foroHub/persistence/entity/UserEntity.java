@@ -27,11 +27,14 @@ public class UserEntity
     private String email;
     @Column(nullable = false, unique = true)
     private String password;
-    @ManyToMany
+    @OneToMany
     @JoinTable(name = "user_profile",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "profile_id"))
     private Set<ProfileEntity> list_profile = new HashSet<>();
-    @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @OneToMany
+    @JoinTable(name = "user_topic",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "topic_id"))
     private Set<TopicEntity> list_topic = new HashSet<>();
 }

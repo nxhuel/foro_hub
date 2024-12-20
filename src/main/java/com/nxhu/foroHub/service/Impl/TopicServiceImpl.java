@@ -1,7 +1,11 @@
 package com.nxhu.foroHub.service.Impl;
 
+import com.nxhu.foroHub.dto.TopicDTO;
+import com.nxhu.foroHub.dto.UserPersonalDataDTO;
 import com.nxhu.foroHub.persistence.entity.*;
+import com.nxhu.foroHub.persistence.repository.CourseRepository;
 import com.nxhu.foroHub.persistence.repository.TopicRepository;
+import com.nxhu.foroHub.persistence.repository.UserRepository;
 import com.nxhu.foroHub.service.TopicService;
 import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.*;
@@ -20,9 +24,23 @@ public class TopicServiceImpl implements TopicService
     @Autowired
     private TopicRepository topicRepository;
 
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private CourseRepository courseRepository;
+
     @Override
     public void createTopic(TopicEntity aTopic)
     {
+        UserEntity user = userRepository.findById(aTopic.getAuthor().getId())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        CourseEntity course = courseRepository.findById(aTopic.getCourse().getId())
+                .orElseThrow(() -> new RuntimeException("Course not found"));
+
+        aTopic.setAuthor(user);
+        aTopic.setCourse(course);
         try
         {
             topicRepository.save(aTopic);
@@ -57,14 +75,15 @@ public class TopicServiceImpl implements TopicService
         Optional<TopicEntity> existingTopic = this.getTopicById(topicId);
         if (existingTopic.isPresent())
         {
-            TopicEntity updatedTopic = existingTopic.get().builder()
-                    .title(newTopic.getTitle())
-                    .message(newTopic.getMessage())
-                    .creation_date(newTopic.getCreation_date())
-                    .status(newTopic.getStatus())
-                    .course(newTopic.getCourse())
-                    .build();
-            this.createTopic(updatedTopic);
+            TopicEntity updatedTopic = existingTopic.get();
+
+            updatedTopic.setTitle(newTopic.getTitle());
+            updatedTopic.setMessage(newTopic.getMessage());
+            updatedTopic.setCreation_date(newTopic.getCreation_date());
+            updatedTopic.setStatus(newTopic.getStatus());
+            updatedTopic.setCourse(newTopic.getCourse());
+
+            topicRepository.save(updatedTopic);
         } else
         {
             throw new EntityNotFoundException("Topic with ID " + topicId + " no exists");

@@ -1,5 +1,6 @@
 package com.nxhu.foroHub.service.Impl;
 
+import com.nxhu.foroHub.persistence.entity.TopicEntity;
 import com.nxhu.foroHub.persistence.entity.UserEntity;
 import com.nxhu.foroHub.persistence.repository.UserRepository;
 import com.nxhu.foroHub.service.UserService;
@@ -57,12 +58,15 @@ public class UserServiceImpl implements UserService
         Optional<UserEntity> existingUser = this.getUserById(userId);
         if (existingUser.isPresent())
         {
-            UserEntity updatedUser = existingUser.get().builder()
-                    .username(newUser.getUsername())
-                    .email(newUser.getEmail())
-                    .password(newUser.getPassword())
-                    .build();
-            this.createUser(updatedUser);
+            UserEntity updatedUser = existingUser.get();
+
+            updatedUser.setUsername(newUser.getUsername());
+            updatedUser.setEmail(newUser.getEmail());
+            updatedUser.setPassword(newUser.getPassword());
+            updatedUser.setList_profile(newUser.getList_profile());
+            updatedUser.setList_topic(newUser.getList_topic());
+
+            userRepository.save(updatedUser);
         } else
         {
             throw new EntityNotFoundException("User with ID " + userId + " no exists");

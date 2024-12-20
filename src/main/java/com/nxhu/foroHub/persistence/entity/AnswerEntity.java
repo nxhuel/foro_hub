@@ -24,7 +24,7 @@ public class AnswerEntity
     @Column(nullable = false)
     private LocalDateTime creation_date;
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity author;
     @Column(nullable = false)
     private String solution;

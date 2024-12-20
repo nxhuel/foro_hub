@@ -28,7 +28,7 @@ public class TopicEntity
     @Column(nullable = false)
     private Status status;
     @ManyToOne
-    @JoinColumn(name = "author_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private UserEntity author;
     @ManyToOne
     @JoinColumn(name = "course_id", nullable = false)

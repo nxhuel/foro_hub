@@ -41,7 +41,7 @@ public class ProfileController
         return new ResponseEntity<>(profiles, HttpStatus.OK);
     }
 
-    @GetMapping("/profile/{id}")
+    @GetMapping("/profile/{profileId}")
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId)
     {
         return profileService.getProfileById(profileId)
@@ -50,7 +50,7 @@ public class ProfileController
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/update-profile/{id}")
+    @PutMapping("/update-profile/{profileId}")
     public ResponseEntity<Void> updateProfile(@PathVariable Long profileId, @RequestBody ProfileEntity newProfile)
     {
         boolean notFound = profileService.getProfileById(profileId).isEmpty();
@@ -62,7 +62,7 @@ public class ProfileController
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/delete-profile/{id}")
+    @DeleteMapping("/delete-profile/{profileId}")
     public ResponseEntity<Void> deleteProfile(@PathVariable Long profileId)
     {
         boolean notFound = profileService.getProfileById(profileId).isEmpty();

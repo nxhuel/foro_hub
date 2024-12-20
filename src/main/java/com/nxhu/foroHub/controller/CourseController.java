@@ -40,7 +40,7 @@ public class CourseController
         return new ResponseEntity<>(courses, HttpStatus.OK);
     }
 
-    @GetMapping("/course/{id}")
+    @GetMapping("/course/{courseId}")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long courseId)
     {
         return courseService.getCourseById(courseId)
@@ -49,7 +49,7 @@ public class CourseController
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @DeleteMapping("/delete-course/{id}")
+    @DeleteMapping("/delete-course/{courseId}")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long courseId)
     {
         boolean notFound = courseService.getCourseById(courseId).isEmpty();

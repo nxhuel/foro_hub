@@ -52,13 +52,17 @@ public class UserController
         }
 
         Set<UserForoDataDTO> usersForoData = userService.getUsers().stream()
-                .map(u -> new UserForoDataDTO(u.getUsername(), u.getList_profile(), u.getList_topic()))
+                .map(u -> new UserForoDataDTO(
+                        u.getUsername(),
+                        u.getList_profile().stream().map(p -> p.getUsername()).collect(Collectors.toSet()),
+                        u.getList_topic().stream().map(t -> t.getTitle()).collect(Collectors.toSet())
+                ))
                 .collect(Collectors.toSet());
 
         return new ResponseEntity<>(usersForoData, HttpStatus.OK);
     }
 
-    @GetMapping("/user-personal-data/{id}")
+    @GetMapping("/user-personal-data/{userId}")
     public ResponseEntity<UserPersonalDataDTO> getUserPersonalData(@PathVariable Long userId)
     {
         return userService.getUserById(userId)
@@ -67,16 +71,19 @@ public class UserController
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @GetMapping("/user-foro-data/{id}")
+    @GetMapping("/user-foro-data/{userId}")
     public ResponseEntity<UserForoDataDTO> getUserForoData(@PathVariable Long userId)
     {
         return userService.getUserById(userId)
-                .map(u -> new UserForoDataDTO(u.getUsername(), u.getList_profile(), u.getList_topic()))
+                .map(u -> new UserForoDataDTO(
+                        u.getUsername(),
+                        u.getList_profile().stream().map(p -> p.getUsername()).collect(Collectors.toSet()),
+                        u.getList_topic().stream().map(t -> t.getTitle()).collect(Collectors.toSet())))
                 .map(userForoDataDTO -> new ResponseEntity<>(userForoDataDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
-    @PutMapping("/update-user/{id}")
+    @PutMapping("/update-user/{userId}")
     public ResponseEntity<Void> updateUser(@PathVariable Long userId, @RequestBody UserEntity newUser)
     {
         boolean notFound = userService.getUserById(userId).isEmpty();
@@ -89,7 +96,7 @@ public class UserController
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-    @DeleteMapping("/delete-user/{id}")
+    @DeleteMapping("/delete-user/{userId}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long userId)
     {
         boolean notFound = userService.getUserById(userId).isEmpty();

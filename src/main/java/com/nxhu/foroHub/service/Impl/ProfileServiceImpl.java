@@ -57,10 +57,10 @@ public class ProfileServiceImpl implements ProfileService
         Optional<ProfileEntity> existingProfile = this.getProfileById(profileId);
         if (existingProfile.isPresent())
         {
-            ProfileEntity updatedProfile = existingProfile.get().builder()
-                    .username(newProfile.getUsername())
-                    .build();
-            this.createProfile(updatedProfile);
+            ProfileEntity updatedProfile = existingProfile.get();
+            updatedProfile.setUsername(newProfile.getUsername());
+
+            profileRepository.save(updatedProfile);
         } else
         {
             throw new EntityNotFoundException("Profile with ID " + profileId + " no exists");
