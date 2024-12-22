@@ -5,6 +5,7 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 
+import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -27,6 +28,22 @@ public class UserEntity
     private String email;
     @Column(nullable = false, unique = true)
     private String password;
+
+    // Atributos de spring security
+    @Column(name = "is_enabled")
+    private boolean isEnabled;
+    @Column(name = "account_no_expired")
+    private boolean accountNoExpired;
+    @Column(name = "account_no_locked")
+    private boolean accountNoLocked;
+    @Column(name = "credential_no_expired")
+    private boolean credentialNoExpired;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
+    private Set<RoleEntity> roleList = new HashSet<>();
+
+    // Atributos extras
     @OneToMany
     @JoinTable(name = "user_profile",
             joinColumns = @JoinColumn(name = "user_id"),

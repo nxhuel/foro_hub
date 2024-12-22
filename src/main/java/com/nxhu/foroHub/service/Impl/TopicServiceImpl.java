@@ -1,7 +1,5 @@
 package com.nxhu.foroHub.service.Impl;
 
-import com.nxhu.foroHub.dto.TopicDTO;
-import com.nxhu.foroHub.dto.UserPersonalDataDTO;
 import com.nxhu.foroHub.persistence.entity.*;
 import com.nxhu.foroHub.persistence.repository.CourseRepository;
 import com.nxhu.foroHub.persistence.repository.TopicRepository;
@@ -10,6 +8,7 @@ import com.nxhu.foroHub.service.TopicService;
 import com.sun.jdi.request.DuplicateRequestException;
 import jakarta.persistence.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
@@ -56,7 +55,7 @@ public class TopicServiceImpl implements TopicService
         try
         {
             return new HashSet<>(topicRepository.findAll());
-        } catch (DataAccessException e) // Error con traer temas de la BD
+        } catch (DataAccessException e)
         {
             System.err.println("Error getting themes: " + e.getMessage());
             return Collections.emptySet();

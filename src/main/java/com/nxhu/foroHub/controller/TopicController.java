@@ -5,12 +5,15 @@ import com.nxhu.foroHub.dto.TopicDTO;
 import com.nxhu.foroHub.persistence.entity.TopicEntity;
 import com.nxhu.foroHub.service.TopicService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import static java.lang.Thread.sleep;
 
 @RestController
 @RequestMapping("/v1")
@@ -50,7 +53,7 @@ public class TopicController
                 .map(topicDTO -> new ResponseEntity<>(topicDTO, HttpStatus.OK))
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
-    
+
     @GetMapping("/topic-answer/{topicId}")
     public ResponseEntity<TopicAnswerDTO> getTopicAnswer(@PathVariable Long topicId)
     {
