@@ -1,8 +1,11 @@
 package com.nxhu.foroHub.service.Impl;
 
+import com.nxhu.foroHub.controller.dto.AuthCreateUserRequest;
 import com.nxhu.foroHub.controller.dto.AuthLoginRequest;
 import com.nxhu.foroHub.controller.dto.AuthResponse;
+import com.nxhu.foroHub.persistence.entity.RoleEntity;
 import com.nxhu.foroHub.persistence.entity.UserEntity;
+import com.nxhu.foroHub.persistence.repository.RoleRepository;
 import com.nxhu.foroHub.persistence.repository.UserRepository;
 import com.nxhu.foroHub.util.JwtUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,12 +24,17 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserDetailServiceImpl implements UserDetailsService
 {
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private RoleRepository roleRepository;
 
     @Autowired
     private JwtUtils jwtUtils;
@@ -95,5 +103,56 @@ public class UserDetailServiceImpl implements UserDetailsService
             throw new BadCredentialsException("Invalid password");
         }
         return new UsernamePasswordAuthenticationToken(username, userDetails.getPassword(), userDetails.getAuthorities());
+    }
+
+    public AuthResponse createUser(AuthCreateUserRequest authCreateUserRequest)
+    {
+        String username = authCreateUserRequest.username();
+        String password = authCreateUserRequest.password();
+        String email = authCreateUserRequest.email();
+        List<String> roleRequest = authCreateUserRequest.roleRequest().roleListName();
+
+        Set<RoleEntity> roleEntitySet = roleRepository.findRoleEntitiesByRoleEnumIn(roleRequest).stream().collect(Collectors.toSet());
+
+        if (roleEntitySet.isEmpty())
+        {
+            throw new IllegalArgumentException("The roles specified does not exist.");
+        }
+
+        UserEntity userEntity = UserEntity.builder()
+                .username(username)
+                .password(passwordEncoder.encode(password))
+                .email(email)
+                .roleList(roleEntitySet)
+                .isEnabled(true)
+                .accountNoLocked(true)
+                .accountNoExpired(true)
+                .credentialNoExpired(true)
+                .build();
+
+        UserEntity userCreated = userRepository.save(userEntity);
+
+        ArrayList<SimpleGrantedAuthority> authorityList = new ArrayList<>();
+
+        userCreated.getRoleList().forEach(role -> authorityList.add(new SimpleGrantedAuthority("ROLE_".concat(role.getRoleEnum().name()))));
+
+        userCreated.getRoleList()
+                .stream()
+                .flatMap(role -> role.getPermissionList().stream())
+                .forEach(permission -> authorityList.add(new SimpleGrantedAuthority(permission.getName())));
+
+        SecurityContext context = SecurityContextHolder.getContext();
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userCreated.getUsername(), userCreated.getPassword(), authorityList);
+
+        String accessToken = jwtUtils.createToken(authentication);
+
+        AuthResponse authResponse = new AuthResponse(
+                userCreated.getUsername(),
+                "User created successfully",
+                accessToken,
+                true
+        );
+
+        return authResponse;
     }
 }
