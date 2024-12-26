@@ -6,6 +6,7 @@ import com.nxhu.foroHub.service.AnswerService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -13,12 +14,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
+@PreAuthorize("denyAll()")
 public class AnswerController
 {
     @Autowired
     private AnswerService answerService;
 
     @PostMapping("/create-answer")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createAnswer(@RequestBody AnswerEntity aAnswer)
     {
         answerService.createAnswer(aAnswer);
@@ -26,6 +29,7 @@ public class AnswerController
     }
 
     @GetMapping("/answers")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Set<AnswerDTO>> getAnswers()
     {
         boolean notFound = answerService.getAnswers().isEmpty();
@@ -42,6 +46,7 @@ public class AnswerController
     }
 
     @GetMapping("/answer/{answerId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<AnswerDTO> getAnswer(@PathVariable Long answerId)
     {
         return answerService.getAnswerById(answerId)
@@ -51,6 +56,7 @@ public class AnswerController
     }
 
     @DeleteMapping("/delete-answer/{answerId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteAnswer(@PathVariable Long answerId)
     {
         boolean notFound = answerService.getAnswerById(answerId).isEmpty();

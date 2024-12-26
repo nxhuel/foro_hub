@@ -6,6 +6,7 @@ import com.nxhu.foroHub.service.ProfileService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -13,12 +14,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
+@PreAuthorize("denyAll()")
 public class ProfileController
 {
     @Autowired
     private ProfileService profileService;
 
     @PostMapping("/create-profile")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createProfile(@RequestBody ProfileEntity aProfile)
     {
         profileService.createProfile(aProfile);
@@ -26,6 +29,7 @@ public class ProfileController
     }
 
     @GetMapping("/profiles")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Set<ProfileDTO>> getProfiles()
     {
         boolean notFound = profileService.getProfiles().isEmpty();
@@ -42,6 +46,7 @@ public class ProfileController
     }
 
     @GetMapping("/profile/{profileId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<ProfileDTO> getProfile(@PathVariable Long profileId)
     {
         return profileService.getProfileById(profileId)
@@ -51,6 +56,7 @@ public class ProfileController
     }
 
     @PutMapping("/update-profile/{profileId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateProfile(@PathVariable Long profileId, @RequestBody ProfileEntity newProfile)
     {
         boolean notFound = profileService.getProfileById(profileId).isEmpty();
@@ -63,6 +69,7 @@ public class ProfileController
     }
 
     @DeleteMapping("/delete-profile/{profileId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteProfile(@PathVariable Long profileId)
     {
         boolean notFound = profileService.getProfileById(profileId).isEmpty();

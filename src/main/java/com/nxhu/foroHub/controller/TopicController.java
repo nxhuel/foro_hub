@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -17,12 +18,14 @@ import static java.lang.Thread.sleep;
 
 @RestController
 @RequestMapping("/v1")
+@PreAuthorize("denyAll()")
 public class TopicController
 {
     @Autowired
     private TopicService topicService;
 
     @PostMapping("/create-topic")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createTopic(@RequestBody TopicEntity aTopic)
     {
         topicService.createTopic(aTopic);
@@ -30,6 +33,7 @@ public class TopicController
     }
 
     @GetMapping("/topics")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Set<TopicDTO>> getTopics()
     {
         boolean notFound = topicService.getTopics().isEmpty();
@@ -46,6 +50,7 @@ public class TopicController
     }
 
     @GetMapping("/topic/{topicId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<TopicDTO> getTopic(@PathVariable Long topicId)
     {
         return topicService.getTopicById(topicId)
@@ -55,6 +60,7 @@ public class TopicController
     }
 
     @GetMapping("/topic-answer/{topicId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<TopicAnswerDTO> getTopicAnswer(@PathVariable Long topicId)
     {
         return topicService.getTopicById(topicId)
@@ -66,6 +72,7 @@ public class TopicController
     }
 
     @PutMapping("/update-topic/{topicId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> updateTopic(@PathVariable Long topicId, @RequestBody TopicEntity newTopic)
     {
         boolean notFound = topicService.getTopicById(topicId).isEmpty();
@@ -79,6 +86,7 @@ public class TopicController
     }
 
     @DeleteMapping("/delete-topic/{topicId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteTopic(@PathVariable Long topicId)
     {
         boolean notFound = topicService.getTopicById(topicId).isEmpty();

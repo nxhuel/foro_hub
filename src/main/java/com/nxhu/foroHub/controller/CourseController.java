@@ -6,6 +6,7 @@ import com.nxhu.foroHub.service.CourseService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Set;
@@ -13,12 +14,14 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/v1")
+@PreAuthorize("denyAll()")
 public class CourseController
 {
     @Autowired
     private CourseService courseService;
 
     @PostMapping("/create-course")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> createCourse(@RequestBody CourseEntity aCourse)
     {
         courseService.createCourse(aCourse);
@@ -26,6 +29,7 @@ public class CourseController
     }
 
     @GetMapping("/courses")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Set<CourseDTO>> getCourses()
     {
         boolean notFound = courseService.getCourse().isEmpty();
@@ -41,6 +45,7 @@ public class CourseController
     }
 
     @GetMapping("/course/{courseId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<CourseDTO> getCourse(@PathVariable Long courseId)
     {
         return courseService.getCourseById(courseId)
@@ -50,6 +55,7 @@ public class CourseController
     }
 
     @DeleteMapping("/delete-course/{courseId}")
+    @PreAuthorize("hasRole('USER')")
     public ResponseEntity<Void> deleteCourse(@PathVariable Long courseId)
     {
         boolean notFound = courseService.getCourseById(courseId).isEmpty();
