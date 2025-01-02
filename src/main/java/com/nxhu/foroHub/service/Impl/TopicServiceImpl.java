@@ -50,6 +50,7 @@ public class TopicServiceImpl implements TopicService
     }
 
     @Override
+    @Cacheable("topics")
     public Set<TopicEntity> getTopics()
     {
         try

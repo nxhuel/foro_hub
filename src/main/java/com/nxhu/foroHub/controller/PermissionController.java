@@ -13,7 +13,7 @@ import java.util.Set;
 @RestController
 @RequestMapping("/v1")
 @PreAuthorize("permitAll()")
-public class PermissionControler
+public class PermissionController
 {
     @Autowired
     private PermissionService permissionService;
